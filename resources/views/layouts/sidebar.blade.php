@@ -49,8 +49,6 @@
             <x-menu-item name="Case List" icon="fas fa-table" link="{{ route('problem.index') }}"></x-menu-item>
             <hr class="text-primary">
 
-
-
             {{-- Account Setting --}}
             <x-menu-title title="Account Setting" icon="fas fa-user-cog"></x-menu-title>
             <x-menu-item name="Profile" icon="fas fa-user" link="{{ route('profile') }}"></x-menu-item>
@@ -68,6 +66,15 @@
             <x-menu-item name="Case List" icon="fas fa-table" link="{{ route('problem.index') }}"></x-menu-item>
             <hr class="text-primary">
 
+            {{-- Article Manager --}}
+            <x-menu-title title="Article Manager" icon="far fa-newspaper"></x-menu-title>
+            <x-menu-item name="Create Article " icon="fas fa-plus-circle" link="{{route('article.create')}}">
+            </x-menu-item>
+            
+            <x-menu-item name="Article Lists" icon="far fa-list-alt" link="{{route('article.index')}}"></x-menu-item>
+            <hr class="text-primary">
+
+
             {{-- Account Setting --}}
             <x-menu-title title="Account Setting" icon="fas fa-user-cog"></x-menu-title>
             <x-menu-item name="Profile" icon="fas fa-user" link="{{ route('profile') }}"></x-menu-item>
@@ -76,13 +83,10 @@
             <x-menu-item name="Change Password" icon="fas fa-sync-alt" link="{{ route('profile.changePassword') }}">
             </x-menu-item>
             <hr class="text-primary">
+            
             @elseif (Auth::user()->role == 2)
-            {{-- Article Manager --}}
-            <x-menu-title title="Article Manager" icon="far fa-newspaper"></x-menu-title>
-            <x-menu-item name="Create Article" icon="fas fa-plus-circle" link="{{ route('article.create') }}">
-            </x-menu-item>
-            <x-menu-item name="Article Lists" icon="far fa-list-alt" link="{{ route('article.index') }}"></x-menu-item>
-            <hr class="text-primary">
+            
+            
 
             {{-- Account Setting --}}
             <x-menu-title title="Account Setting" icon="fas fa-user-cog"></x-menu-title>
@@ -99,7 +103,7 @@
         <div class="mx-3 my-4">
             <a class="btn btn-danger btn-sm w-100" href="{{ route('logout') }}" onclick="
                 event.preventDefault();document.getElementById('logout-form').submit();">
-                Logout
+                Logout 
             </a>
         </div>
 

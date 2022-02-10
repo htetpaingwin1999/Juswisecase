@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +37,7 @@ Route::middleware(['auth', 'isBanned'])->group(function () {
         Route::prefix('dashboard')->group(function () {
             Route::resource('category', 'CategoryController');
             Route::resource('problem', 'ProblemController');
+            Route::resource('article', 'ArticleController');
         });
 
         // User Manager
@@ -57,5 +59,9 @@ Route::middleware(['auth', 'isBanned'])->group(function () {
             Route::post('/update-photo', 'ProfileController@updatePhoto')->name('profile.updatePhoto');
             Route::post('/update-password', 'ProfileController@updatePassword')->name('profile.updatePassword');
         });
+
+        // HPW
+        // Route::get('article/create-article','ArticleController@create')->name('article.create');
+        // Route::get('article/article-list','ArticleController@list')->name('article.list');
     });
 });

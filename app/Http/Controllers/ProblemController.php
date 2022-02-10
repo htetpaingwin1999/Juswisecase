@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Problem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,9 @@ class ProblemController extends Controller
      */
     public function create()
     {
-        return view('case.create');
+        $categories = Category::get();
+        // dd($categories);
+        return view('case.create')->with('categories',$categories);
     }
 
     /**
