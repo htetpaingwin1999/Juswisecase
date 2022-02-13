@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', 'JusDbController@index')->name('index');
 Route::view('/about-us', 'juswise-theme.about')->name('about');
 Route::view('/donate-us', 'juswise-theme.donate')->name('donate');

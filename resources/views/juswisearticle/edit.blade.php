@@ -1,185 +1,314 @@
 @extends('layouts.app')
 
-@section("title") Edit Case @endsection
-
+@section("title") Create Article @endsection
+<style>
+    .areabutton{
+        background:#5f004f;
+        color:#fff;
+        margin:3px 5px;
+        padding:10px;
+        border-radius:3px;
+    }
+    div.isHide{
+        display:none;
+    }
+    div.selectorcontainer{
+        height:170px;
+    }
+    
+</style>
 @section('content')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<!-- Tiny Script -->
+<script src="https://cdn.tiny.cloud/1/ekzc7ui2dcqdle2pclgtww95j8g14pwocjd2ou489c4zrr2n/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
 <div class="container-fluid">
     <x-bread-crumb>
-        <li class="breadcrumb-item"><a href="{{ route('problem.index') }}">Case Lists</a></li>
-        <li class="breadcrumb-item active mb-3" aria-current="page">Edit Case
+        <li class="breadcrumb-item"><a href="{{ route('article.index') }}">Article Lists</a></li>
+        <li class="breadcrumb-item active mb-3" aria-current="page">Create Article
     </x-bread-crumb>
+<form  method="post" action="{{ route('article.update',[$article->id]) }}" enctype="multipart/form-data">
+                        @csrf  
+                        @method('put') 
+    <!-- Areas and Categories -->
+    <div class="row mt-3 mb-3">
+                            <!-- Categories -->
+                            <div class="col-lg-3 col-md-6 col-sm-12">
+                                <div class="card">
+                                    <div class="card-body selectorcontainer">
+                                        <h6 class="fw-bold">Select Category</h6>
+                                        <Select class="form-select @error('categoryidcarrier')
+                                                is-invalid
+                                                @enderror" id="categoryidselector" name="categoryidselector" required>
+                                                    <option value="" disabled>
+                                                        Select Category
+                                                    </option>
+                                                    @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}" {{
+                                                         $article->category->id ==$category->id? 'selected' : ''
+                                                         }}>{{ $category->title }}</option>
+                                                    @endforeach
+                                        </Select>
+                                        @error('categoryidcarrier')
+                                        <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Area -->
+                            <div class="col-lg-9 col-md-6 col-sm-12">
+                                <div class="card">
+                                    <div class="card-body selectorcontainer">
+                                        <h6 class="fw-bold">Select Area</h6>
+
+                                        <Select class="form-select @error('areaidcarrier')
+                                                is-invalid
+                                                @enderror" name="areaidselector" id="areaidselector" required>
+                                                    <option value="" disabled>
+                                                        Select Area
+                                                    </option>
+                                                    @foreach ($areas as $area)
+                                                    <option value="{{ $area->id.'-'.$area->title }}" id="{{$area->title}}">{{ $area->title }}</option>
+                                                    @endforeach
+                                                
+                                        </Select>
+                                        @error('areaidcarrier')
+                                        <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                        <div class="container @error('areaidcarrier')
+                                                isHide
+                                                @enderror" id="areaanchorscontainers">
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    <!-- Areas and Categoreis -->
 
     <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="mb-0">
-                        <i class="feather-edit"></i>
-                        Edit Case
-                    </h4>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 col-lg-9">
+        <div class="col-lg-12">
             <div class="card shadow mt-3">
                 <div class="card-body case-card m-4">
-                    <form action="{{ route('problem.update', $problem->id) }}" method="POST">
-                        @csrf
-                        @method('put')
-
-                        <div class="form-group mb-4">
-                            <label for="parties">Parties Name</label>
-                            <input type="text" id="parties" class="form-control fs-5 @error('title')
-                                is-invalid
-                            @enderror" placeholder="U Mya Vs Daw Hla" value="{{ old('title', $problem->title) }}"
-                                name="title" required>
-                            @error('title')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                    <!-- Create Article -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="mb-0">
+                                        <i class="feather-plus-circle"></i>
+                                        Edit Article
+                                    </h4>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    
+                    <textarea style="display:none" id="areanamecarrier" name="areanamecarrier">
+                        @foreach($article->areas as $area)
+                        {{$area->title}} "-"
+                        @endforeach
+                        
+                    </textarea>
 
-                        <div class="form-group mb-4">
-                            <label>Case Number</label>
-                            <textarea rows="6" class="form-control fs-5 @error('case_number')
-                                is-invalid
-                            @enderror" placeholder="အမှုအမှတ်စဉ်" name="case_number"
-                                required>{{ old('case_number', $problem->case_number) }}</textarea>
-                            @error('case_number')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                    <textarea style="display:none" id="areaidcarrier" name="areaidcarrier"> 
+                        @foreach($article->areas as $area)
+                        {{$area->id}} "-"
+                        @endforeach
+                    </textarea>
 
-                        <div class="form-group mb-4">
-                            <label for="">Select Category </label>
-                            <Select class="form-select @error('category_id')
-                                is-invalid
-                            @enderror" name="category_id" required>
-                                <option value="">
-                                    အမှုအမျိုးအစား (eg.အမွေမှူ)
-                                </option>
-                                @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category_id', $problem->category_id) ==
-                                    $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
-                                @endforeach
-                            </Select>
-                            @error('category_id')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                    <!-- Article Title -->
+                    <div class="form-group mb-4">
+                        <label for="title">Article Title</label>
+                        <input type="text" id="title" class="form-control fs-5 @error('title')
+                            is-invalid
+                        @enderror" placeholder="" value="{{ old('title',$article->title) }}" name="title" required>
+                        @error('title')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                        <div class="form-group mb-4">
-                            <label>Allegations</label>
-                            <textarea rows="6" class="form-control fs-5 @error('allegation')
-                                is-invalid
-                            @enderror" placeholder="တရားစွဲဆိုသော/ပါရှိသောပုဒ်မ" name="allegation"
-                                required>{{ old('allegation', $problem->allegation) }}</textarea>
-                            @error('allegation')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
 
-                        <div class="form-group mb-4">
-                            <label>Date Of Decision</label>
-                            <p class="mb-0 fs-5">Current Date : <span class="text-primary">{{ $problem->decision_date
-                                    }}</span></p>
-                            <input type="date" class="form-control fs-5 @error('decision_date')
-                                is-invalid
-                            @enderror" placeholder="အမှုဆုံးဖြတ်သည့်နေ့အတိအကျ"
-                                value="{{ old('decision_date', $problem->decision_date) }}" name="decision_date"
-                                required>
-                            @error('decision_date')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                    <!-- Questions for student readers -->
+                    <div class="form-group mb-4">
+                        <label for="questionforstudentreader">Questions for student readers</label>
+                        <input type="text" id="questionforstudentreader" class="form-control fs-5 @error('questionforstudentreader')
+                            is-invalid
+                        @enderror" placeholder="" value="{{ old('questionforstudentreader',$article->question_for_student_reader) }}" name="questionforstudentreader" required>
+                        @error('questionforstudentreader')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                        <div class="form-group mb-4">
-                            <label>Case Summary</label>
-                            <textarea rows="12" class="form-control fs-5 @error('case_summary')
-                                is-invalid
-                            @enderror" placeholder="အမှုဖြစ်စဉ်အကျဉ်း" name="case_summary"
-                                required>{{ old('case_summary', $problem->case_summary) }}</textarea>
-                            @error('case_summary')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Decision</label>
-                            <textarea rows="12" class="form-control fs-5 @error('decision')
-                                is-invalid
-                            @enderror" placeholder="အမှုဖြစ်စဉ်အကျဉ်း" name="decision"
-                                required>{{ old('decision', $problem->decision) }}</textarea>
-                            @error('decision')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Instance</label>
-                            <input type="text" class="form-control fs-5 @error('instance')
-                                is-invalid
-                            @enderror" placeholder="ဆုံးဖြတ်ချက်အမျိုးအစား"
-                                value="{{ old('instance', $problem->instance) }}" name="instance" required>
-                            @error('instance')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Reasoning Decision of Court</label>
-                            <textarea rows="12" class="form-control fs-5 @error('conclusion')
-                                is-invalid
-                            @enderror" placeholder="ဆုံးဖြတ်ရာတွင် ထည့်သွင်းစဉ်းစားချက်များ" name="conclusion"
-                                required>{{ old('conclusion', $problem->conclusion) }}</textarea>
-                            @error('conclusion')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Related Cases & Documents</label>
-                            <textarea rows="10" class="form-control fs-5 @error('related_case')
-                                is-invalid
-                            @enderror" placeholder="ဆက်စပ်သည်များ (အမှု/စာအုပ်)" name="related_case"
-                                required>{{ old('related_case', $problem->related_case) }}</textarea>
-                            @error('related_case')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Document Name</label>
-                            <input type="text" class="form-control fs-5 @error('document_name')
-                                                    is-invalid
-                                                    @enderror" placeholder="စာအုပ်နာမည်"
-                                value="{{ old('document_name', $problem->document_name) }}" name="document_name"
-                                required>
-                            @error('document_name')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Document Link</label>
-                            <input type="text" class="form-control fs-5 @error('document_link')
-                                                    is-invalid
-                                                    @enderror" placeholder="စာအုပ်လိပ်စာ"
-                                value="{{ old('document_link', $problem->document_link) }}" name="document_link"
-                                required>
-                            @error('document_link')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <button class="btn btn-primary btn-lg w-100 mt-3">Update Case</button>
-
-                    </form>
+                            
+                    <div class="form-group">
+                        <label>Body</label>
+                        <textarea name="articlebody" rows="10" cols="40" class="form-control tinymce-editor
+                        @error('articlebody')
+                        is-invalid
+                        @enderror" >{{ old('articlebody',$article->description)}}</textarea>
+                        @error('articlebody')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                    </div>  
+                    
+                    <button class="btn btn-primary btn-lg w-100 mt-3">Update Case</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</form>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!-- Tiny Script -->
+<script src="https://cdn.tiny.cloud/1/ekzc7ui2dcqdle2pclgtww95j8g14pwocjd2ou489c4zrr2n/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script type="text/javascript">
+    tinymce.init({
+        selector: 'textarea.tinymce-editor',
+        menubar: false,
+        plugins: [
+            'advlist autolink lists link image charmap print preview anchor',
+            'searchreplace visualblocks code fullscreen',
+            'insertdatetime media table paste code help wordcount'
+        ],
+        toolbar: 'undo redo | formatselect | ' +
+            'bold italic backcolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+        content_css: '//www.tiny.cloud/css/codepen.min.css'
+    });
+</script>
+<script>
+                                                
+    // console.log('testing');
+    const areaids = [];
+    const areaidselector = document.getElementById('areaidselector');
+
+    const areaanchorscontainers = document.getElementById('areaanchorscontainers');
+    const areaidcarrier = document.getElementById('areaidcarrier');
+    const areanamecarrier = document.getElementById('areanamecarrier');
+
+
+    // console.log(areaidcarrier.value);
+    // console.log(categoryidcarrier);
+    // console.log(categoryidselector);
+    // console.log(areaid);
+    // console.log(areaanchorscontainers);
+
+    if(areaidcarrier.value!== null && !areaanchorscontainers.classList.contains('isHide'))    
+    {
+        let areas = areaidcarrier.value.split(`"-"`);
+        let area_name = areanamecarrier.value.split(`"-"`);
+
+
+        for(let i = 0;i<areas.length-1;i++)
+        {
+            areaids[i] = parseInt(areas[i]);
+
+            let areaanchor = document.createElement('button');
+            areaanchor.setAttribute('value',`${areaids[i]}`);
+            areaanchor.innerHTML = `${area_name[i]}`;
+            areaanchor.setAttribute('class',"areabutton");
+
+            // console.log(areaanchor);
+        
+            areaanchorscontainers.appendChild(areaanchor);
+            areaanchorscontainers.style.marginTop = "12px";
+            assignAreaValue();
+            // console.log(areaidcarrier.value);
+            
+
+            areaanchor.addEventListener('click',(e)=>{
+                // console.log('click');
+                let value = e.target.value;
+                console.log("Value"+value);
+                areaanchorscontainers.removeChild(areaanchor);
+                console.log(areaids);
+
+                let myIndex = -1;
+                for(let j = 0; j<areaids.length;j++)
+                {
+                    if(value == areaids[j]){
+                        myIndex = j;
+                    }
+                }
+                console.log("myindex"+myIndex);
+                if(myIndex != -1){
+                    areaids.splice(myIndex, 1);
+                    // console.log("areaids"+areaids);
+                    assignAreaValue();
+                }
+                
+            })
+        }
+    }
+    
+                                    
+    areaidselector.addEventListener('change',(e)=>{
+        let selected = e.target.value.split('-');
+        let selectedIndex = selected[0];
+        let selectedValue = selected[selected.length-1];
+
+        // console.log(selected);
+        areaanchorscontainers.classList.remove('isHide');
+
+        if(areaids.length <3){
+            console.log('selected index' + selectedIndex);
+            let block = false;
+            for(let j = 0; j<areaids.length;j++)
+            {
+                if(areaids[j] == parseInt(selectedIndex)){
+                    block = true;
+                }
+            }
+
+            if(!block){
+            areaids.push(selectedIndex);
+
+            let areaanchor = document.createElement('button');
+            areaanchor.setAttribute('value',`${selectedIndex}`);
+            areaanchor.innerHTML = `${selectedValue}`;
+            areaanchor.setAttribute('class',"areabutton");
+
+            // console.log(areaanchor);
+        
+            areaanchorscontainers.appendChild(areaanchor);
+            areaanchorscontainers.style.marginTop = "12px";
+            assignAreaValue(null);
+            // console.log(areaidcarrier.value);
+            
+
+            areaanchor.addEventListener('click',(e)=>{
+                // console.log('click');
+                let value = e.target.value;
+                console.log("Value"+value);
+                areaanchorscontainers.removeChild(areaanchor);
+                //   areaids.pop(value);
+                
+                let myIndex = areaids.indexOf(value);
+                // console.log("myindex"+myIndex);
+                if(myIndex != -1){
+                    areaids.splice(myIndex, 1);
+                    // console.log("areaids"+areaids);
+                    assignAreaValue();
+                }
+            })
+
+        }  
+        }
+    })
+
+    function assignAreaValue(){
+        console.log(areaidcarrier);
+        areaidcarrier.value = "";
+        for(let i=0;i<areaids.length;i++){
+            if(i == 0){
+                areaidcarrier.value = areaids[0];
+            }
+            else{
+                areaidcarrier.value = areaidcarrier.value+","+areaids[i];
+            }                 
+        }
+        console.log(areaidcarrier.value);
+    }    
+</script>
 @endsection

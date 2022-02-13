@@ -1,11 +1,19 @@
 @extends('layouts.app')
 
-@section("title") Article Lists @endsection
-
+@section("title") Case Lists @endsection
+<style>
+    .areabutton{
+        background:#5f004f;
+        color:#fff;
+        margin:3px 5px;
+        padding:10px;
+        border-radius:3px;
+    }
+</style>
 @section('content')
 <div class="mx-1">
     <x-bread-crumb>
-        <li class="breadcrumb-item active mb-3" aria-current="page">Article Lists</li>
+        <li class="breadcrumb-item active mb-3" aria-current="page">Case Lists</li>
     </x-bread-crumb>
 
     <div class="row">
@@ -14,12 +22,12 @@
                 <div class="card-body">
                     <h4 class="mb-0">
                         <i class="feather-list"></i>
-                        Case Lists
+                        Article Lists 
                     </h4>
                     <hr>
 
                     <div class="d-flex align-items-baseline">
-                        <form action="{{ route('problem.index') }}" class="mb-4" method="GET">
+                        <form action="{{ route('article.index') }}" class="mb-4" method="GET">
                             <div class="form-inline">
                                 <input type="text" class="form-control" placeholder="Search ..."
                                     value="{{ request()->search }}" name="search" required>
@@ -31,7 +39,7 @@
 
                         <div class="ms-5 d-flex align-items-center">
                             @isset(request()->search)
-                            <a href="{{ route('problem.index') }}" class="text-decoration-none btn btn-danger btn-sm">
+                            <a href="{{ route('article.index') }}" class="text-decoration-none btn btn-danger btn-sm">
                                 x
                             </a>
                             <p class="fw-bold mt-3 ms-2">Search keyword : <span class="fs-5">'{{ request()->search
@@ -46,61 +54,66 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Parties</th>
-                                    <th>Case Number</th>
-                                    <th>Category</th>
-                                    <th>Owner</th>
-                                    <th>Control</th>
+                                    <th>Contributor Name</th>
+                                    <th>Category of Articles</th>
+                                    <th>Interest Area</th>
+                                    <th>Approval</th>
                                     <th>Created_at</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                @forelse ($cases as $case)
+                                @forelse ($articles as $article)
 
                                 <tr>
-                                    <td>{{ $case->id }}</td>
-                                    <td class="small">{{ Str::words($case->title, 1, ' .....') }}</td>
-                                    <td>{{ $case->case_number }}</td>
+                                    <td>{{ $article->id }}</td> 
+                                    <td>{{ $article->user->name }}</td>
                                     <td>
-                                        @isset($case->category)
-                                        {{ $case->category->title }}
+                                        @isset($article->category_id)
+                                        {{ $article->category->title }}
                                         @else
                                         <span class="text-danger">Deleted</span>
                                         @endisset
-                                    </td>
-                                    <td>{{ $case->user->name }}</td>
+                                    </td> 
+                                    <td>
+                                            @foreach($article->areas as $area)
+                                            <button class="areabutton">{{$area->title}}</button>
+                                            <br/>
+                                            @endforeach
+                                    </td>      
                                     <td class="text-nowrap">
-                                        <a href="{{ route('problem.show', $case->id) }}"
+                                        <a href="{{ route('article.show', $article->id) }}"
                                             class="btn btn-sm btn-outline-success">
                                             Show
                                         </a>
 
-                                        <a href="{{ route('problem.edit', $case->id) }}"
+                                        <a href="{{ route('article.edit', $article->id) }}"
                                             class="btn btn-sm btn-outline-primary">
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('problem.destroy', $case->id) }}" method="post"
-                                            class="d-inline-block" id="form{{ $case->id }}">
+                                        <form action="{{ route('article.destroy', $article->id) }}" method="post"
+                                            class="d-inline-block" id="form{{ $article->id }}">
                                             @csrf
                                             @method('delete')
-                                            <!-- <button type="button" class="btn btn-sm btn-outline-danger"
-                                                onclick="return askConfirm({{ $case->id}})">Delete</button> -->
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick=`return askConfirm({{ $article->id }})`>Delete</button>
                                         </form>
                                     </td>
                                     <td>
                                         <span class="small">
                                             {{-- <i class="feather-calendar"></i> --}}
-                                            {{ $case->created_at->format("d-m-Y") }}
+                                            {{ $article->created_at->format("d-m-Y") }}
                                         </span>
                                         <br>
                                         <span class="small">
                                             {{-- <i class="feather-clock"></i> --}}
-                                            {{ $case->created_at->format("h:i A") }}
+                                            {{ $article->created_at->format("h:i A") }}
                                         </span>
                                     </td>
+                                
                                 </tr>
+                                
 
 
 
@@ -115,8 +128,8 @@
                     </div>
 
                     <div class="d-lg-flex justify-content-between align-items-center">
-                        {{ $cases->appends(request()->all())->links() }}
-                        <h4 class="mb-0">Total : {{ $cases->total() }}</h4>
+                        {{ $articles->appends(request()->all())->links() }}
+                        <h4 class="mb-0">Total : {{ $articles->total() }}</h4>
                     </div>
                 </div>
             </div>

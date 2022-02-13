@@ -13,6 +13,10 @@ class Article extends Model
 
     public function category()
     {
-        return $this->belongsTo(ArticleCategory::class);
+        return $this->belongsTo(Category::class);
+    }
+    public function areas(){
+        return $this->belongsToMany(Area::class,'article_areas','article_id','area_id')
+            ->withTimestamps();
     }
 }

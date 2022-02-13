@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Area;
-use App\Problem;
+use App\Article;
 use App\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -17,22 +17,15 @@ class ArticleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        // $all = Problem::all();
-
-        // foreach ($all as $a) {
-        //     $a->slug = Str::slug($a->title, '-') . "-" . uniqid();
-        //     $a->update();
-        // }
-
-        
-
-        $cases =
-            Problem::when(isset(request()->search), function ($q) {
+    {  
+        $articles =
+            Article::when(isset(request()->search), function ($q) {
                 $search = request()->search;
-                return $q->orwhere("title", "like", "%$search%")->orwhere("case_number", "like", "%$search%")->orwhere("allegation", "like", "%$search%")->orwhere("case_summary", "like", "%$search%")->orwhere("decision_date", "like", "%$search%");
-            })->with(['user', 'category'])->latest('id')->paginate(7);
-        return view('article.index', compact('cases'));
+                return $q->orwhere("title", "like", "%$search%");
+
+            })->with(['user', 'category','areas'])->latest('id')->paginate(7);
+
+        return view('juswisearticle.index')->with(['articles'=>$articles]);
     }
 
     /**
@@ -58,122 +51,100 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        // dd('hi');
-        dd($request->all());
-        // $request->validate([
-        //     "title" => "required|min:5|unique:problems,title|max:255",
-        //     "case_number" => "required|min:3|max:100",
-        //     "category_id" => "required|exists:categories,id",
-        //     "allegation" => "required|min:5|max:255",
-        //     "decision_date" => "required|min:5|max:50",
-        //     "case_summary" => "required|min:5",
-        //     "decision" => "required|min:5",
-        //     "instance" => "required|min:5|max:100",
-        //     "conclusion" => "required|min:5",
-        //     "related_case" => "required|min:5",
-        //     "document_name" => "required|min:3|max:255",
-        //     "document_link" => "required|min:5|max:255"
-        // ]);
+        
+        $request->validate([
+            "title" => "required|min:5|max:255",
+            "questionforstudentreader" => "required|min:5|max:100",
+            "categoryidselector" => "required|exists:categories,id",
+            "articlebody" => "required|min:5",
+            "areaidcarrier" => "required|min:1",
+        ]);
+    
 
+        // dd($request->all());
+        $article = new Article();
+        $article->title = $request->title;
+        $article->description = $request->articlebody;
+        $article->question_for_student_reader = $request->questionforstudentreader;
+        $article->user_id = Auth::id();
+        $article->category_id = $request->categoryidselector;
+        $article->save();
 
-        // $case = new Problem();
-        // $case->title = $request->title;
-        // $case->slug = Str::slug($request->title, '-') . "-" . uniqid();
-        // $case->case_number = $request->case_number;
-        // $case->category_id = $request->category_id;
-        // $case->allegation = $request->allegation;
-        // $case->decision_date = date("j F Y", strtotime($request->decision_date));
-        // // $case->decision_date = $request->decision_date;
-        // $case->case_summary = $request->case_summary;
-        // $case->decision = $request->decision;
-        // $case->instance = $request->instance;
-        // $case->conclusion = $request->conclusion;
-        // $case->related_case = $request->related_case;
-        // $case->document_name = $request->document_name;
-        // $case->document_link = $request->document_link;
-        // $case->user_id = Auth::id();
-        // $case->save();
+        $areaIds = explode(",",$request->areaidcarrier);
+        $article->areas()->attach($areaIds);
 
-        // return redirect()->route('problem.index')->with('toast', ['icon' => 'success', 'title' => 'New case is created.']);
+        return redirect()->route('article.create')->with('toast', ['icon' => 'success', 'title' => 'New Category Created']);
     }
 
+    
     /**
      * Display the specified resource.
      *
-     * @param  \App\Problem  $problem
+     * @param  \App\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function show(Problem $problem)
+    public function show(Article $article)
     {
-        return view('case.show', compact('problem'));
+        $categories = Category::get();
+        $areas = Area::get();
+        return view('juswisearticle.show', compact('article','categories','areas'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Problem  $problem
+     * @param  \App\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function edit(Problem $problem)
+    public function edit(Article $article)
     {
-        return view('case.edit', compact('problem'));
+        $categories = Category::get();
+        $areas = Area::get();
+        return view('juswisearticle.edit', compact('article','categories','areas'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Problem  $problem
+     * @param  \App\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Problem $problem)
-    {
+    public function update(Request $request, Article $article)
+    { 
+        
         $request->validate([
-            "title" => "required|min:5|unique:problems,title|max:255",
-            "case_number" => "required|min:3|max:100",
-            "category_id" => "required|exists:categories,id",
-            "allegation" => "required|min:5|max:255",
-            "decision_date" => "required|min:5|max:50",
-            "case_summary" => "required|min:5",
-            "decision" => "required|min:5",
-            "instance" => "required|min:5|max:100",
-            "conclusion" => "required|min:5",
-            "related_case" => "required|min:5",
-            "document_name" => "required|min:3|max:255",
-            "document_link" => "required|min:5|max:255"
+            "title" => "required|min:5|max:255",
+            "questionforstudentreader" => "required|min:5|max:100",
+            "categoryidselector" => "required|exists:categories,id",
+            "articlebody" => "required|min:5",
+            "areaidcarrier" => "required|min:1",
         ]);
 
-        $case = $problem;
-        if ($case->title != $request->title) {
-            $case->slug = Str::slug($request->title, '-') . "-" . uniqid();
-        }
-        $case->title = $request->title;
-        $case->case_number = $request->case_number;
-        $case->category_id = $request->category_id;
-        $case->allegation = $request->allegation;
-        $case->decision_date = date("j F Y", strtotime($request->decision_date));
-        // $case->decision_date = $request->decision_date;
-        $case->case_summary = $request->case_summary;
-        $case->decision = $request->decision;
-        $case->instance = $request->instance;
-        $case->conclusion = $request->conclusion;
-        $case->related_case = $request->related_case;
-        $case->document_name = $request->document_name;
-        $case->document_link = $request->document_link;
-        $case->update();
 
-        return redirect()->route('problem.index')->with('toast', ['icon' => 'success', 'title' => 'Update Success.']);
+        $newarticle = $article;
+        $newarticle->title = $request->title;
+        $newarticle->description = $request->articlebody;
+        $newarticle->question_for_student_reader = $request->questionforstudentreader;
+        $newarticle->user_id = Auth::id();
+        $article->category_id = $request->categoryidselector;
+        $newarticle->update();
+
+        $areaIds = explode(",",$request->areaidcarrier);
+        $newarticle->areas()->sync($areaIds);
+
+        return redirect()->route('article.index')->with('toast', ['icon' => 'success', 'title' => 'New Category Created']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Problem  $problem
+     * @param  \App\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Problem $problem)
+    public function destroy(Article $article)
     {
-        $problem->delete();
+        $article->delete();
 
         return redirect()->back()->with('toast', ['icon' => 'success', 'title' => "Case is deleted."]);
     }

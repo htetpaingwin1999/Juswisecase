@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <h4 class="mb-0">
                         <i class="feather-list"></i>
-                        Case Lists
+                        Case Lists 
                     </h4>
                     <hr>
 
@@ -86,7 +86,7 @@
                                             @csrf
                                             @method('delete')
                                             <button type="button" class="btn btn-sm btn-outline-danger"
-                                                onclick="return askConfirm({{ $case->id }})">Delete</button>
+                                                onclick=`return askConfirm({{ $case->id }})`>Delete</button>
                                         </form>
                                     </td>
                                     <td>

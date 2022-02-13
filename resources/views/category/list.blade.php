@@ -27,7 +27,7 @@
                         @csrf
                         @method('delete')
                         <button type="button" class="btn btn-sm btn-outline-danger"
-                            onclick="return askConfirm({{ $category->id }})"><i class="feather-trash-2"></i></button>
+                            onclick=`return askConfirm({{ $category->id }})`><i class="feather-trash-2"></i></button>
                     </form>
                 </td>
                 <td>

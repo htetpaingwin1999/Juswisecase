@@ -11,4 +11,7 @@ class Area extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function article(){
+        return $this->belongsToMany(Article::class,'article_areas','article_id','area_id');
+    }
 }

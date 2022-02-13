@@ -120,6 +120,7 @@ class ProblemController extends Controller
      */
     public function update(Request $request, Problem $problem)
     {
+        
         $request->validate([
             "title" => "required|min:5|unique:problems,title|max:255",
             "case_number" => "required|min:3|max:100",

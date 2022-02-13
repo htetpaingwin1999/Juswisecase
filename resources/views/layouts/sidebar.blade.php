@@ -59,6 +59,8 @@
             <hr class="text-primary">
 
             @elseif (Auth::user()->role == 1)
+            
+
             {{-- Case Manager --}}
             <x-menu-title title="Case Manager" icon="fas fa-book"></x-menu-title>
             <x-menu-item name="Create Case" icon="fas fa-plus-circle" link="{{ route('problem.create') }}">
@@ -67,6 +69,10 @@
             <hr class="text-primary">
 
             {{-- Article Manager --}}
+             <x-menu-title title="Category Manager" icon="fas fa-layer-group"></x-menu-title>
+            <x-menu-item name="Case Category" icon="fas fa-stream" link="{{ route('category.index') }}"></x-menu-item>
+            <hr class="text-primary">            
+
             <x-menu-title title="Article Manager" icon="far fa-newspaper"></x-menu-title>
             <x-menu-item name="Create Article " icon="fas fa-plus-circle" link="{{route('article.create')}}">
             </x-menu-item>
