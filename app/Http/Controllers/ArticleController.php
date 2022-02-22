@@ -58,16 +58,20 @@ class ArticleController extends Controller
             "categoryidselector" => "required|exists:categories,id",
             "articlebody" => "required|min:5",
             "areaidcarrier" => "required|min:1",
+            "image" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
         ]);
-    
+  
+        $imageName = time().'.'.$request->image->extension();  
+   
+        $request->image->move(public_path('uploads'), $imageName);
 
-        // dd($request->all());
         $article = new Article();
         $article->title = $request->title;
         $article->description = $request->articlebody;
         $article->question_for_student_reader = $request->questionforstudentreader;
         $article->user_id = Auth::id();
         $article->category_id = $request->categoryidselector;
+        $article->image = $imageName;
         $article->save();
 
         $areaIds = explode(",",$request->areaidcarrier);
@@ -112,22 +116,45 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     { 
+        $imageName = "";
+        if($request->image == null)
+        {
+            $request->validate([
+                "title" => "required|min:5|max:255",
+                "questionforstudentreader" => "required|min:5|max:100",
+                "categoryidselector" => "required|exists:categories,id",
+                "articlebody" => "required|min:5",
+                "areaidcarrier" => "required|min:1",
+            ]);
+        }
+        else{
+            $request->validate([
+                "title" => "required|min:5|max:255",
+                "questionforstudentreader" => "required|min:5|max:100",
+                "categoryidselector" => "required|exists:categories,id",
+                "articlebody" => "required|min:5",
+                "areaidcarrier" => "required|min:1",
+                "image" => "required|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            ]);
+            $imageName = time().'.'.$request->image->extension();  
+   
+            $request->image->move(public_path('uploads'), $imageName);    
+            if(\File::exists(public_path('uploads/'.$article->image))){
+                \File::delete(public_path('uploads/'.$article->image));
+              }
+        }
         
-        $request->validate([
-            "title" => "required|min:5|max:255",
-            "questionforstudentreader" => "required|min:5|max:100",
-            "categoryidselector" => "required|exists:categories,id",
-            "articlebody" => "required|min:5",
-            "areaidcarrier" => "required|min:1",
-        ]);
-
-
         $newarticle = $article;
         $newarticle->title = $request->title;
         $newarticle->description = $request->articlebody;
         $newarticle->question_for_student_reader = $request->questionforstudentreader;
         $newarticle->user_id = Auth::id();
         $article->category_id = $request->categoryidselector;
+
+        if($request->image!=null)
+        {
+            $article->image = $imageName;   
+        }
         $newarticle->update();
 
         $areaIds = explode(",",$request->areaidcarrier);

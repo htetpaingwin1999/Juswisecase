@@ -91,8 +91,7 @@
             <hr class="text-primary">
             
             @elseif (Auth::user()->role == 2)
-            
-            
+               
 
             {{-- Account Setting --}}
             <x-menu-title title="Account Setting" icon="fas fa-user-cog"></x-menu-title>

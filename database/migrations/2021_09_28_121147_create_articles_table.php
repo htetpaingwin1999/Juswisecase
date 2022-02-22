@@ -20,6 +20,7 @@ class CreateArticlesTable extends Migration
             $table->longText('question_for_student_reader');
             $table->bigInteger('user_id');
             $table->bigInteger('category_id');
+            $table->text('image');
             $table->timestamps();
         });
     }

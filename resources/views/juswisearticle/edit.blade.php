@@ -15,6 +15,10 @@
     div.selectorcontainer{
         height:170px;
     }
+    img{
+        width:50%;
+        height:auto;
+    }
     
 </style>
 @section('content')
@@ -139,7 +143,20 @@
                         <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+                  
+                    <!--New  Image -->
+                    <div class="form-group mb-4">
+                        <label for="image">New Image</label>
+                        <input type="file" id="image" onchange="validateImage(event)" class="form-control fs-5 mb-3 @error('image')
+                            is-invalid
+                        @enderror" placeholder="" value="{{ old('image') }}" name="image">
+                        <div id="result"></div>
+                        <img src="{{asset('uploads/'.$article->image)}}" id="originalimage" class="images"/> 
 
+                        @error('image')
+                        <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
                             
                     <div class="form-group">
                         <label>Body</label>
@@ -186,7 +203,6 @@
     const areaanchorscontainers = document.getElementById('areaanchorscontainers');
     const areaidcarrier = document.getElementById('areaidcarrier');
     const areanamecarrier = document.getElementById('areanamecarrier');
-
 
     // console.log(areaidcarrier.value);
     // console.log(categoryidcarrier);
@@ -309,6 +325,34 @@
             }                 
         }
         console.log(areaidcarrier.value);
-    }    
+    }   
+
+    const originalimage = document.getElementById('originalimage');
+
+    var x=1;
+    function validateImage(event){
+	document.getElementById('result').innerHTML='';
+	if(x==2){
+		document.getElementById('output').remove();
+		x=1;
+	}
+	var image=document.getElementById('image');
+	var filename=image.value;
+	if(filename!=''){
+		var extdot=filename.lastIndexOf(".")+1;
+		var ext=filename.substr(extdot,filename.lenght).toLowerCase();
+		if(ext=="jpg" || ext=="png" || ext=="jpeg" || ext =="gif" || ext =="svg"){
+			x=2;
+			var output=document.createElement('img');
+            originalimage.style.display = "none";
+            output.style.width = "50%";
+			output.id='output';
+			output.src=URL.createObjectURL(event.target.files[0]);
+			image.after(output);
+		}else{
+			document.getElementById('result').innerHTML='Please select only jpg and png file';
+		}
+	}
+} 
 </script>
 @endsection

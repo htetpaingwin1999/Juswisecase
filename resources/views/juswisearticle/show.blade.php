@@ -11,6 +11,10 @@
         padding:10px;
         border-radius:3px;
     }
+    img{
+        width:50%;
+        height:auto;
+    }
 </style>
 @endsection
 
@@ -36,6 +40,10 @@
                     <div class="mt-5 px-2 case-body">
                         <h4 class="fw-bold text-primary">Questions for Student Readers</h4>
                         <p class="mt-2 fs-5">{{$article->question_for_student_reader}}</p>
+                    </div>
+                    <div class="mt-5 px-2 case-body">
+                        <h4 class="fw-bold text-primary">Image</h4>
+                        <img src="{{asset('uploads/'.$article->image)}}"/>
                     </div>
                     <div class="mt-5 px-2 case-body">
                         <h4 class="fw-bold text-primary">Description</h4>
